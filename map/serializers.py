@@ -11,6 +11,8 @@ class CommunityAreaSerializer(serializers.ModelSerializer):
     num_permits = serializers.SerializerMethodField()
 
     def get_num_permits(self, obj):
+        # In a given year, we want to find the number of permits for a community area
+        # To do so, we'll filter out the RestaurantPermits with a given year and id? 
         """
         TODO: supplement each community area object with the number
         of permits issued in the given year.
@@ -30,5 +32,11 @@ class CommunityAreaSerializer(serializers.ModelSerializer):
             }
         ]
         """
+        request = self.context.get("request")
+        year = request.query_params.get("year")
+        community_area_id=obj.area_id
+        qs = RestaurantPermit.objects.all()
+        qs_filtered = qs.filter(community_area_id=community_area_id, year=year)
+        result = qs_filtered.count()
 
-        pass
+        return result
