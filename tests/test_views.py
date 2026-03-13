@@ -35,7 +35,23 @@ def test_map_data_view():
     # Query the map data endpoint
     client = APIClient()
     response = client.get(reverse("map_data", query={"year": 2021}))
+    print(f"This is the response: {response}")
 
     # TODO: Complete the test by asserting that the /map-data/ endpoint
     # returns the correct number of permits for Beverly and Lincoln 
     # Park in 2021
+    expected = {
+        "Beverly": {
+            "area_id": 1,
+            "permits": 2
+        },
+        "Lincoln Park": {
+            "area_id": 2,
+            "permits": 3,
+        }
+    }
+    for obj in response.data:
+        name = obj.name
+        
+        assert(expected[name]["area_id"] == obj["area_id"])
+        assert(expected[name]["permits"] == obj["permits"])
