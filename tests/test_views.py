@@ -51,7 +51,9 @@ def test_map_data_view():
         }
     }
     for obj in response.data:
-        name = obj.name
+        name = obj["name"]
+        print(obj)
         
+        assert(expected[name]["permits"] == obj["num_permits"])
+
         assert(expected[name]["area_id"] == obj["area_id"])
-        assert(expected[name]["permits"] == obj["permits"])
