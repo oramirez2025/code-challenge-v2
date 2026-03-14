@@ -45,21 +45,31 @@ export default function RestaurantPermitMap() {
   const yearlyDataEndpoint = `/map-data/?year=${year}`
 
   useEffect(() => {
-    fetch()
+    fetch(yearlyDataEndpoint)
       .then((res) => res.json())
       .then((data) => {
         /**
          * TODO: Fetch the data needed to supply to map with data
          */
+        setCurrentYearData(data)
       })
   }, [yearlyDataEndpoint])
-
+  console.log(currentYearData)
 
   function getColor(percentageOfPermits) {
     /**
      * TODO: Use this function in setAreaInteraction to set a community 
      * area's color using the communityAreaColors constant above
      */
+    if (percentageOfPermits <= 0.25) {
+      return communityAreaColors[0]
+    } else if (percentageOfPermits <= 0.5) {
+      return communityAreaColors[1]
+    } else if (percentageOfPermits <= 0.75) {
+      return communityAreaColors[2]
+    } else {
+      return communityAreaColors[3]
+    }
   }
 
   function setAreaInteraction(feature, layer) {
@@ -80,13 +90,20 @@ export default function RestaurantPermitMap() {
   return (
     <>
       <YearSelect filterVal={year} setFilterVal={setYear} />
-      <p className="fs-4">
-        Restaurant permits issued this year: {/* TODO: display this value */}
-      </p>
-      <p className="fs-4">
-        Maximum number of restaurant permits in a single area:
-        {/* TODO: display this value */}
-      </p>
+      {
+        currentYearData.length > 0 &&  
+          (<>
+            <p className="fs-4">
+              Restaurant permits issued this year:  {currentYearData.reduce((curr_sum, area) => curr_sum + area.num_permits, 0)}
+            </p>
+            <p className="fs-4">
+              Maximum number of restaurant permits in a single area: {currentYearData.reduce((prev_max, area) => Math.max(prev_max, area.num_permits), -Infinity)}
+            </p>
+          </>) 
+
+      }
+      
+
       <MapContainer
         id="restaurant-map"
         center={[41.88, -87.62]}
@@ -100,7 +117,7 @@ export default function RestaurantPermitMap() {
           <GeoJSON
             data={RAW_COMMUNITY_AREAS}
             onEachFeature={setAreaInteraction}
-            key={maxNumPermits}
+            key={1}
           />
         ) : null}
       </MapContainer>
